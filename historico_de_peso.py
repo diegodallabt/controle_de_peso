@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 import pandas as pd
 from datetime import datetime
+import matplotlib.pyplot as plt
 
 FILE_NAME = 'save/historico.csv'
 
@@ -100,6 +101,28 @@ def atualizar_tabela(df):
             label = tk.Label(frame_tabela, text=val, borderwidth=1, relief="solid", width=15, fg=fg_color)
             label.grid(row=i + 1, column=j)
 
+# Gera gráfico de linha em relação ao peso ganho/perdido no período
+def exibir_grafico(df):
+    if df.empty or 'Diferença' not in df.columns:
+        messagebox.showerror("Erro", "Não há dados suficientes para gerar o gráfico.")
+        return
+    
+    df = df.sort_values(by='Data', ascending=True)
+    
+    datas = df['Data']
+    diferencas = df['Diferença']
+    
+    plt.figure(figsize=(8, 6))
+    plt.plot(datas, diferencas, marker='o', linestyle='-', color='b')
+    
+    plt.title("Diferença de Peso ao Longo do Tempo")
+    plt.xlabel("Data")
+    plt.ylabel("Diferença de Peso (kg)")
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    
+    plt.show()
+
 
 # Funcionalidades da interface gráfica
 root = tk.Tk()
@@ -117,6 +140,9 @@ entry_peso.grid(row=0, column=1, padx=5)
 
 btn_adicionar = tk.Button(frame_entrada, text="Adicionar peso atual", command=adicionar_peso)
 btn_adicionar.grid(row=0, column=2, padx=5)
+
+btn_grafico = tk.Button(frame_entrada, text="Visualizar gráfico", command=lambda: exibir_grafico(carregar_dados()))
+btn_grafico.grid(row=0, column=3, padx=5)
 
 frame_tabela = tk.Frame(root)
 frame_tabela.pack(pady=10, padx=20)
