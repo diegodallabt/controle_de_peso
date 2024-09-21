@@ -54,10 +54,12 @@ def adicionar_peso():
                 comparacao = '<'
             else:
                 comparacao = '='
+            diferenca = peso_atual - peso_anterior
         else:
             comparacao = '-'
+            diferenca = 0.0 
 
-        nova_linha = pd.DataFrame({'Data': [data_atual], 'Peso': [peso_atual], 'Comparação': [comparacao]})
+        nova_linha = pd.DataFrame({'Data': [data_atual], 'Peso': [peso_atual], 'Comparação': [comparacao], 'Diferença': [diferenca]})
         df = pd.concat([df, nova_linha], ignore_index=True)
     
     salvar_dados(df)
@@ -66,6 +68,10 @@ def adicionar_peso():
 
 # Dá reload na tabela para ser exibida corretamente ao adicionar um novo peso
 def atualizar_tabela(df):
+    if 'Diferença' not in df.columns:
+        df['Diferença'] = df['Peso'] - df['Peso'].shift(1)
+        df['Diferença'] = df['Diferença'].fillna(0)
+
     df = df.sort_values(by='Data', ascending=False).reset_index(drop=True)
 
     for widget in frame_tabela.winfo_children():
@@ -81,13 +87,15 @@ def atualizar_tabela(df):
                 val = f"{val}kg" 
             if j == 2: 
                 if val == '>':
-                    fg_color = 'green'  
+                    fg_color = 'green'
                 elif val == '<':
-                    fg_color = 'red'  
+                    fg_color = 'red'
                 else:
-                    fg_color = 'black'  
+                    fg_color = 'black'
+            if j == 3:
+                val = f"{val}kg"
             else:
-                fg_color = 'black' 
+                fg_color = 'black'
 
             label = tk.Label(frame_tabela, text=val, borderwidth=1, relief="solid", width=15, fg=fg_color)
             label.grid(row=i + 1, column=j)
