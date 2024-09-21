@@ -66,6 +66,8 @@ def adicionar_peso():
 
 # Dá reload na tabela para ser exibida corretamente ao adicionar um novo peso
 def atualizar_tabela(df):
+    df = df.sort_values(by='Data', ascending=False).reset_index(drop=True)
+
     for widget in frame_tabela.winfo_children():
         widget.destroy()
 
@@ -77,7 +79,7 @@ def atualizar_tabela(df):
         for j, val in enumerate(row):
             if j == 1:  
                 val = f"{val}kg" 
-            if j == 2:  
+            if j == 2: 
                 if val == '>':
                     fg_color = 'green'  
                 elif val == '<':
@@ -89,6 +91,7 @@ def atualizar_tabela(df):
 
             label = tk.Label(frame_tabela, text=val, borderwidth=1, relief="solid", width=15, fg=fg_color)
             label.grid(row=i + 1, column=j)
+
 
 # Funcionalidades da interface gráfica
 root = tk.Tk()
